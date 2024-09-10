@@ -1,0 +1,44 @@
+---
+// import client from "@lib/graphql/client";
+import { QUERY_WORKORDERS_STRING } from "@lib/graphql/queries";
+import { print } from "graphql";
+
+import type { WorkOrder as WorkOrderType } from "@lib/__generated__/graphql";
+import WorkOrder from '@components/WorkOrder.astro';
+
+export const prerender = false;
+
+// const data = await client.query({
+//   query: QUERY_WORKORDERS,
+// });
+
+const response = await fetch("http://localhost:5000/graphql", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    query: QUERY_WORKORDERS_STRING,
+  }),
+});
+
+const data = await response.json();
+
+const workOrders: WorkOrderType[] = data.data.queryWorkOrders;
+
+console.log("data", data);
+---
+
+<table>
+  <thead>
+    <tr>
+      <th>Work Order</th>
+    </tr>
+  </thead>
+  <tbody>
+    {workOrders.map((workOrder: WorkOrderType) => (
+      <WorkOrder workOrder={workOrder}/>
+
+       ))}
+  </tbody>
+</table>

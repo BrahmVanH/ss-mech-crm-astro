@@ -1,0 +1,82 @@
+---
+import type { WorkOrder } from "@lib/__generated__/graphql";
+
+type Props = {
+  workOrder: WorkOrder;
+};
+
+const {
+  date,
+  lastUpdated,
+  customerId,
+  propertyId,
+  type,
+  description,
+  completed,
+  completedBy,
+  quote,
+  total,
+  charged,
+  comments,
+  invoices,
+  laborItems,
+} = Astro.props.workOrder;
+---
+
+<table>
+  <thead>
+    <tr>
+      <th>Work Order</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>Date</th>
+      <td>{date}</td>
+    </tr>
+    <tr>
+      <th>Last Updated</th>
+      <td>{lastUpdated}</td>
+    </tr>
+    <tr>
+      <th>Customer ID</th>
+      <td>{customerId}</td>
+    </tr>
+    <tr>
+      <th>Property ID</th>
+      <td>{propertyId}</td>
+    </tr>
+    <tr>
+      <th>Type</th>
+      <td>{type}</td>
+    </tr>
+    <tr>
+      <th>Description</th>
+      <td>{description}</td>
+    </tr>
+    <tr>
+      <th>Completed</th>
+      <td>{completed}</td>
+    </tr>
+    <tr>
+      <th>Completed By</th>
+      <td>{completedBy}</td>
+    </tr>
+    <tr>
+      <th>Quote</th>
+      <td>{quote}</td>
+    </tr>
+    <tr>
+      <th>Total</th>
+      <td>{total}</td>
+    </tr>
+    <tr>
+      <th>Charged</th>
+      <td>{charged}</td>
+    </tr>
+    <tr>
+      <th>Comments</th>
+      <td>{comments}</td>
+    </tr>
+  </tbody>
+</table>
