@@ -1,16 +1,14 @@
 ---
-// import client from "@lib/graphql/client";
+import WorkOrder from '@components/WorkOrder.astro';
+
 import { QUERY_WORKORDERS_STRING } from "@lib/graphql/queries";
-import { print } from "graphql";
+
+import WorkOrderForm from '../components/WorkOrderForm';
 
 import type { WorkOrder as WorkOrderType } from "@lib/__generated__/graphql";
-import WorkOrder from '@components/WorkOrder.astro';
 
 export const prerender = false;
 
-// const data = await client.query({
-//   query: QUERY_WORKORDERS,
-// });
 
 const response = await fetch("http://localhost:5000/graphql", {
   method: "POST",
@@ -28,17 +26,19 @@ const workOrders: WorkOrderType[] = data.data.queryWorkOrders;
 
 console.log("data", data);
 ---
+<div class="max-w-[50%]">
 
 <table>
   <thead>
     <tr>
-      <th>Work Order</th>
+      <th>Work Orders</th>
     </tr>
   </thead>
   <tbody>
     {workOrders.map((workOrder: WorkOrderType) => (
       <WorkOrder workOrder={workOrder}/>
-
+      <WorkOrderForm workOrder={workOrder} />
        ))}
   </tbody>
 </table>
+</div>

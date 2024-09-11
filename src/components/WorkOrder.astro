@@ -23,6 +23,17 @@ const {
 } = Astro.props.workOrder;
 ---
 
+<style>
+  form tbody tr {
+    border-bottom: 1px solid;
+  }
+
+  form tbody th,
+  td {
+    border: 1px solid;
+  }
+</style>
+
 <table>
   <thead>
     <tr>
@@ -32,7 +43,10 @@ const {
   <tbody>
     <tr>
       <th>Date</th>
-      <td>{date}</td>
+      <td><span/>{date}</span><button onclick={handleEdit} value='date'>edit</button></td>
+      <td>
+        <input ref={dateRef} type="text" id="date" value={date} />
+      </td>
     </tr>
     <tr>
       <th>Last Updated</th>

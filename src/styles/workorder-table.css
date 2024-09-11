@@ -1,0 +1,7 @@
+form tbody tr {
+  border-bottom: 1px solid;
+}
+
+form tbody th, td {
+  border: 1px solid;
+}

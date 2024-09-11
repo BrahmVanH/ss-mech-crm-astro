@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import type { WorkOrder } from "@lib/__generated__/graphql";
 
+import '../styles/workorder-table.css'
 type Props = {
   workOrder: WorkOrder;
 };
@@ -44,16 +45,17 @@ const WorkOrderForm: React.FC<Props> = (props: Props) => {
       charged: chargedRef.current?.checked,
       comments: commentsRef.current?.value,
     };
+  }
 
   return (
     <form>
-      <table>
+      <table className="text-left border-collapse">
         <thead>
           <tr>
             <th>Work Order</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="workorder-table-body">
           <tr>
             <th>Date</th>
             <td>
@@ -124,3 +126,5 @@ const WorkOrderForm: React.FC<Props> = (props: Props) => {
     </form>
   );
 };
+
+export default WorkOrderForm;
