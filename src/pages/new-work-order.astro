@@ -1,0 +1,186 @@
+---
+import { QUERY_CUSTOMERS, QUERY_PROPERTIES } from "@lib/graphql/queries";
+import type { Customer, Property } from "@lib/__generated__/graphql";
+
+export const prerender = false;
+
+const response = await fetch("http://localhost:5000/graphql", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify([
+    { query: QUERY_CUSTOMERS },
+    { query: QUERY_PROPERTIES },
+  ]),
+});
+
+const data = await response.json();
+
+const dataObjs = data.map((d: any) => d.data);
+console.log(dataObjs);
+
+function findObjectWithQueryProperties(dataObjs: any[]): any | null {
+  for (const obj of dataObjs) {
+    if (obj.hasOwnProperty("queryProperties")) {
+      return obj;
+    }
+  }
+  return null;
+}
+
+function findObjectWithQueryCustomers(dataObjs: any[]): any | null {
+  for (const obj of dataObjs) {
+    if (obj.hasOwnProperty("queryCustomers")) {
+      return obj;
+    }
+  }
+  return null;
+}
+
+const properties: Property[] =
+  findObjectWithQueryProperties(dataObjs).queryProperties;
+const customers: Customer[] =
+  findObjectWithQueryCustomers(dataObjs).queryCustomers;
+
+console.log(data);
+
+// let customers = data.data.queryCustomers;
+// let properties = data.data.queryProperties;
+import "@styles/workorder-table.css";
+import { operationName } from "@apollo/client";
+---
+
+<!-- input CreateWorkOrderInput {
+	date: String!
+	customerId: ID!
+	propertyId: ID!
+	type: String!
+	description: String!
+	completedBy: String
+	quote: Float
+	total: Float
+	charged: Boolean!
+	paid: Boolean!
+	comments: String
+	laborItems: [LaborItemInput]
+} -->
+<div class="w-screen h-screen flex justify-center align-middle">
+  <form class="max-w-[80%] mt-4">
+          <h1 class="text-center">Create Work Order</h1>
+
+    <table>
+      <tbody>
+        <tr>
+          <th>Date</th>
+
+          <td>
+            <input name="date" type="text" />
+          </td>
+        </tr>
+        <tr>
+          <th>Customer</th>
+          <td>
+            <select name="customer" id="customer">
+              {
+                customers.map((customer: Customer) => (
+                  <option
+                    value={customer._id}
+                  >{`${customer.firstName} ${customer.lastName}`}</option>
+                ))
+              }
+            </select>
+          </td>
+          <tr>
+            <th></th>
+            <td>
+              <input type="number" name="phone" />
+            </td>
+          </tr>
+          <tr>
+            <th></th>
+            <td>
+              <input type="email" name="email" />
+            </td>
+          </tr>
+
+          <tr>
+            <th>Property</th>
+            <td>
+              <select name="property" id="property">
+                {
+                  properties.map((property: Property) => (
+                    <option value={property._id}>
+                      {property.propertyAddress.street}
+                    </option>
+                  ))
+                }
+              </select>
+            </td>
+          </tr>
+
+          <tr>
+            <th>Type</th>
+            <td>
+              <select name="type" id="type">
+                <option value="plumbing">Plumbing</option>
+                <option value="appliance">Appliance</option>
+                <option value="hvac">HVAC</option>
+                <option value="painting">Painting</option>
+                <option value="lighting">Lighting</option>
+                <option value="other">Other</option>
+              </select>
+            </td>
+            <tr>
+              <th>Description</th>
+              <td>
+                <textarea class="text-xs" name="description" cols={60} rows={5} ></textarea>
+              </td>
+            </tr>
+            <tr>
+              <th>Completed</th>
+              <td>
+                <input type="checkbox" name="completed" />
+              </td>
+            </tr>
+            <tr>
+              <th>Completed By</th>
+              <td>
+                <select name="completedBy" id="completedBy">
+                  <option value="brahm">Brahm</option>
+                </select>
+              </td>
+              <tr>
+                <th>Quote</th>
+                <td>
+                  <input type="number" name="quote" placeholder="cents" />
+                </td>
+              </tr>
+              <tr>
+                <th>Total</th>
+                <td>
+                  <input type="number" name="total" />
+                </td>
+              </tr>
+              <tr>
+                <th>Charged</th>
+                <td>
+                  <input type="checkbox" name="charged" />
+                </td>
+                <tr>
+                  <th>Comments</th>
+                  <td>
+                    <textarea class="text-xs" name="comments" cols={60} rows={5}></textarea>
+                  </td>
+                </tr>
+              </tr>
+            </tr>
+          </tr>
+        </tr>
+        <button type="submit" class="bg-black hover:bg-white hover:text-black text-white font-bold py-2 px-4 rounded">
+          Submit
+        </button>
+      </tbody>
+    </table>
+  </form>
+</div>

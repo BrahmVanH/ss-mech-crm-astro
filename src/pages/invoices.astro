@@ -1,12 +1,13 @@
 ---
 // import WorkOrder from '@components/WorkOrder.astro';
 
-import { QUERY_WORKORDERS_STRING } from "@lib/graphql/queries";
+import { QUERY_INVOICES, QUERY_WORKORDERS_STRING } from "@lib/graphql/queries";
 
 import WorkOrder from "../components/WorkOrder";
 import ModalWrapper from "@components/ModalWrapper";
 
-import type { WorkOrder as WorkOrderType } from "@lib/__generated__/graphql";
+import type { Invoice as InvoiceType } from "@lib/__generated__/graphql";
+import Invoice from "@components/Invoice.svelte";
 
 export const prerender = false;
 
@@ -16,13 +17,13 @@ const response = await fetch("http://localhost:5000/graphql", {
     "Content-Type": "application/json",
   },
   body: JSON.stringify({
-    query: QUERY_WORKORDERS_STRING,
+    query: QUERY_INVOICES,
   }),
 });
 
 const data = await response.json();
 
-const workOrders: WorkOrderType[] = data.data.queryWorkOrders;
+const invoices: InvoiceType[] = data.data.queryInvoices;
 
 console.log("data", data);
 ---
@@ -31,32 +32,35 @@ console.log("data", data);
   <table class="text-left border-collapse">
     <thead>
       <tr class="border-b border-black">
-        <th>Work Orders</th>
+        <th>Invoices</th>
       </tr>
       <tr class="border-b border-black">
-        <th class="text-start border border-black">Work Order No.</th>
+        <th class="text-start border border-black">Invoice No.</th>
         <th class="text-start border border-black">Date</th>
         <th class="text-start border border-black">Client</th>
         <th class="text-start border border-black">Total</th>
+        <th class="text-start border border-black">Charged</th>
         <th class="text-start border border-black">Paid</th>
         <th class="text-start border border-black">Actions</th>
       </tr>
     </thead>
+
+
+
     <tbody>
-      {
-        workOrders?.map((workOrder: WorkOrderType) => (
+  {
+        invoices?.map((invoice: InvoiceType) => (
           <tr class="border-b border-black">
-            <td class="py-1 px-3 border border-black">{workOrder._id}</td>
-            <td class="py-1 px-3 border border-black">{workOrder.date}</td>
+            <td class="py-1 px-3 border border-black">{invoice._id}</td>
+            <td class="py-1 px-3 border border-black">{invoice.date}</td>
             <td class="py-1 px-3 border border-black">
-              {workOrder.customerId.firstName} {workOrder.customerId.lastName}
+              {invoice.customerId.firstName} {invoice.customerId.lastName}
             </td>
-            <td class="py-1 px-3 border border-black">{workOrder.total}</td>
-            <td class="py-1 px-3 border border-black">{workOrder.paid}</td>
+            <td class="py-1 px-3 border border-black">{invoice.total}</td>
+            <td class="py-1 px-3 border border-black">{invoice.charged}</td>
+            <td class="py-1 px-3 border border-black">{invoice.paid}</td>
             <td>
-              <ModalWrapper client:load>
-                <WorkOrder client:load workOrder={workOrder} />
-              </ModalWrapper>
+              <Invoice client:load invoice={invoice} />
             </td>
           </tr>
         ))
