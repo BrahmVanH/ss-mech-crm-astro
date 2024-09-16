@@ -1,11 +1,5 @@
 <script lang="ts">
-  import { writable } from "svelte/store";
-  import svelte from "svelte";
-
-  import { onMount } from "svelte";
   import {
-    QUERY_INVOICE_BY_ID,
-    QUERY_INVOICES,
     UPDATE_INVOICE_CHARGED,
     UPDATE_INVOICE_COMMENTS,
     UPDATE_INVOICE_CUSTOMER_ID,
@@ -14,16 +8,20 @@
     UPDATE_INVOICE_TOTAL,
     UPDATE_INVOICE_WORK_ORDERS,
   } from "@lib/graphql/queries";
-  import type { Invoice } from "@lib/__generated__/graphql";
-  import { failure, success } from "@lib/toast";
-  import { SvelteToast } from "@zerodevx/svelte-toast";
+
+  import { failure, success } from "@lib/svelteToast";
+
   import { capitalizeFirstLetter, getNormalDateString } from "@lib/util";
-  import type { MutationResult } from "@apollo/client";
+
   import {
     UPDATE_WORK_ORDER_DATE,
     UPDATE_WORK_ORDER_DESCRIPTION,
   } from "@lib/graphql/mutations";
-  import type { MouseEvent } from "react";
+
+  import { SvelteToast } from "@zerodevx/svelte-toast";
+
+  import type { MutationResult } from "@apollo/client";
+  import type { Invoice } from "@lib/__generated__/graphql";
 
   type UpdateInvoiceFieldResponse = {
     status: number;
@@ -42,8 +40,8 @@
   let invoiceNumberState: Invoice["invoiceNumber"] = invoice.invoiceNumber;
   let customerIdState: Invoice["customerId"] = invoice.customerId;
   let workOrdersState: Invoice["workOrders"] = invoice.workOrders;
-  let quoteState: Invoice["quote"] = invoice.quote;
-  let totalState: Invoice["total"] = invoice.total;
+  let quoteState: Invoice["quote"] = invoice.quote ?? 0;
+  let totalState: Invoice["total"] = invoice.total ?? 0;
   let chargedState: Invoice["charged"] = invoice.charged;
   let paidState: Invoice["paid"] = invoice.paid;
   let materialsCostState: Invoice["materialsCost"] = invoice.materialsCost;
@@ -69,7 +67,7 @@
   let chargedInputEl: HTMLInputElement | null = null;
   let dialogBinding: HTMLDialogElement | null = null;
 
-  let invoices = writable([]);
+  let isEditDateBtnVisible: boolean = false;
 
   function getQueryString(field: string) {
     if (!field) {
@@ -178,20 +176,19 @@
 
     exception = true;
   }
-  /** @param {MouseEvent} event */
-  function displayHiddenButton(event: svelte.JSX.MouseEventHandler<HTMLInputElement>) {
-    const target = event. as HTMLElement;
-    const button = target.querySelector("button");
-    button?.classList.remove("invisible");
+  function displayHiddenButton(event: any) {
+    isEditDateBtnVisible = true;
+    const button = event.target.querySelector("button");
+    console.log(button);
+  
   }
 
-  function hideHiddenButton(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    const button = target.querySelector("button");
-    button?.classList.add("invisible");
+  function hideHiddenButton(event: any) {
+    isEditDateBtnVisible = false;
+   
   }
 
-  function handleEdit(e: MouseEvent<HTMLButtonElement>) {
+  function handleEdit(e: any) {
     if (!(e.target as HTMLButtonElement).value) {
       console.error("No target provided");
       failure("No target provided");
@@ -240,7 +237,7 @@
     }
   }
 
-  async function handleSaveEdit(e: MouseEvent<HTMLButtonElement>) {
+  async function handleSaveEdit(e: any) {
     e.preventDefault();
     setAllEditFalse();
 
@@ -412,23 +409,23 @@
     }
   }
 
-  $: if (editCharged && typeof chargedInputEl === HTMLInputElement) {
-    chargedInputEl.removeAttribute("disabled");
-    chargedInputEl?.focus();
-  }
+  // $: if (editCharged && typeof chargedInputEl === HTMLInputElement) {
+  //   chargedInputEl.removeAttribute("disabled");
+  //   chargedInputEl?.focus();
+  // }
 
-  $: if (!editCharged && chargedBinding instanceof HTMLInputElement) {
-    chargedBinding.setAttribute("disabled", "true");
-  }
+  // $: if (!editCharged && chargedBinding instanceof HTMLInputElement) {
+  //   chargedBinding.setAttribute("disabled", "true");
+  // }
 
-  $: if (editPaid && paidInputEl ) {
-    paidInputEl.removeAttribute("disabled");
-    paidInputEl.focus();
-  }
+  // $: if (editPaid && paidInputEl ) {
+  //   paidInputEl.removeAttribute("disabled");
+  //   paidInputEl.focus();
+  // }
 
-  $: if (!editCompleted && completedBin instanceof HTMLInputElement) {
-    completedByBinding.setAttribute("disabled", "true");
-  }
+  // $: if (!editCompleted && completedBin instanceof HTMLInputElement) {
+  //   completedByBinding.setAttribute("disabled", "true");
+  // }
 
   function handleOnInput(e: any, state: any, fn: any) {
     e.preventDefault();
@@ -445,7 +442,7 @@
 </script>
 
 <div>
-  {#if loading}
+  {#if !loading}
     <p>Loading</p>
   {:else}
     <table>
@@ -470,8 +467,8 @@
                 bind:value={dateState}
               />
               <button
-                class="invisible text-xs underline ml-1"
-                on:click={handleSaveEdit}
+                class="text-xs underline ml-1"
+                on:click={() => handleSaveEdit}
                 value="date"
                 type="button"
               >
@@ -480,12 +477,13 @@
             </td>
           {:else}
             <td>
-              <span>{getNormalDateString(dateState ?? "")} </span>
+              <span>{dateState} </span>
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={handleEdit}
+                on:click={() => handleEdit}
                 value="date"
                 type="button"
+                class:invisible={!isEditDateBtnVisible}
               >
                 edit
               </button>
@@ -530,14 +528,14 @@
           {#if editQuote}
             <td>
               <input
-                bind:value={quoteState ?? 0}
+                bind:value={quoteState}
                 type="number"
                 on:input={(e) => handleOnInput(e, quoteState, parseInt)}
                 name="quote"
               />
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={handleSaveEdit}
+                on:click={(e) => handleSaveEdit}
                 value="quote"
                 type="button"
               >
@@ -549,7 +547,7 @@
               <span>{quoteState} </span>
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={handleEdit}
+                on:click={(e) => handleEdit}
                 value="quote"
                 type="button"
               >
@@ -566,14 +564,14 @@
           {#if editTotal}
             <td>
               <input
-                bind:value={totalState ?? 0}
+                bind:value={totalState}
                 type="number"
                 on:input={(e) => handleOnInput(e, totalState, parseInt)}
                 name="total"
               />
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={handleSaveEdit}
+                on:click={(e) => handleSaveEdit}
                 value="total"
                 type="button"
               >
@@ -585,7 +583,7 @@
               <span>{totalState} </span>
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={handleEdit}
+                on:click={(e) => handleEdit}
                 value="total"
                 type="button"
               >
@@ -602,7 +600,7 @@
           <td>
             <input
               type="checkbox"
-              bind:chargedBinding
+              bind:this={chargedInputEl}
               bind:checked={chargedState}
               on:input={(e) => handleOnInput(e, chargedState, null)}
               name="charged"
@@ -630,6 +628,7 @@
           <td>
             <input
               type="checkbox"
+              bind:this={paidInputEl}
               bind:checked={paidState}
               on:input={(e) => handleOnInput(e, paidState, null)}
               name="paid"
@@ -653,7 +652,7 @@
           {#if editComments}
             <td>
               <textarea
-                bind:value={commentsState ?? ""}
+                bind:value={commentsState}
                 name="comments"
                 on:input={(e) => handleOnInput(e, commentsState, null)}
                 cols={60}
@@ -661,7 +660,7 @@
               />
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={handleSaveEdit}
+                on:click={(e) => handleSaveEdit}
                 value="comments"
                 type="button"
               >
@@ -674,7 +673,7 @@
 
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={handleEdit}
+                on:click={(e) => handleEdit}
                 value="comments"
                 type="button"
               >

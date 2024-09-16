@@ -4,10 +4,11 @@
 import { QUERY_INVOICES, QUERY_WORKORDERS_STRING } from "@lib/graphql/queries";
 
 import WorkOrder from "../components/WorkOrder";
-import ModalWrapper from "@components/ModalWrapper";
+import ModalWrapper from "@components/ModalWrapper.svelte";
+import Test from "@components/Test.svelte";
 
 import type { Invoice as InvoiceType } from "@lib/__generated__/graphql";
-import Invoice from "@components/Invoice.svelte";
+import InvoiceComponent from "@components/Invoice.svelte";
 
 export const prerender = false;
 
@@ -45,10 +46,8 @@ console.log("data", data);
       </tr>
     </thead>
 
-
-
     <tbody>
-  {
+      {
         invoices?.map((invoice: InvoiceType) => (
           <tr class="border-b border-black">
             <td class="py-1 px-3 border border-black">{invoice._id}</td>
@@ -60,7 +59,9 @@ console.log("data", data);
             <td class="py-1 px-3 border border-black">{invoice.charged}</td>
             <td class="py-1 px-3 border border-black">{invoice.paid}</td>
             <td>
-              <Invoice client:load invoice={invoice} />
+              <ModalWrapper client:load >
+                <InvoiceComponent invoice={invoice} />
+              </ModalWrapper>
             </td>
           </tr>
         ))

@@ -1,4 +1,3 @@
-import type { WorkOrder as IWorkOrder } from "@lib/__generated__/graphql";
 import { useCallback, useRef, type PropsWithChildren } from "react";
 
 const ModalWrapper: React.FC<PropsWithChildren> = ({ children }) => {
