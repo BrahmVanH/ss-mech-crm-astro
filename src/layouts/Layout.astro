@@ -1,4 +1,6 @@
 ---
+import SideNav from '@components/SideNav.svelte';
+
 
 interface Props {
 	title: string;
@@ -18,7 +20,10 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+		<div class="flex flex-row h-screen w-screen">
+			<SideNav />
 		<slot />
+		</div>
 	</body>
 </html>
 <style is:global>
@@ -36,6 +41,7 @@ const { title } = Astro.props;
 	html {
 		font-family: system-ui, sans-serif;
 		background: #13151a;
+		scrollbar-width: none
 	}
 	code {
 		font-family:

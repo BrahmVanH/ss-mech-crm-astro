@@ -19,3 +19,6 @@ export const capitalizeFirstLetters = (string: string) => {
   return string.split(" ").map(capitalizeFirstLetter).join(" ");
 };
 
+export const replaceHyphensWithSpaces = (string: string) => {
+  return string.split("-").join(" ");
+}

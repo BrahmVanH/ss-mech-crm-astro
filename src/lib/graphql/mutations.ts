@@ -27,7 +27,6 @@
 //   /* GraphQL */ UPDATE_WORKORDER_DATE_STRING,
 // ) as DocumentNode;
 
-
 // Create Work Order
 export const CREATE_WORK_ORDER = `
   mutation CreateWorkOrder($input: CreateWorkOrderInput!) {
@@ -194,6 +193,128 @@ export const DELETE_WORK_ORDER = `
   mutation DeleteWorkOrder($input: RemoveWorkOrderInput!) {
     deleteWorkOrder(input: $input) {
       id
+    }
+  }
+`;
+
+export const CREATE_CUSTOMER = `
+  mutation CreateCustomer($input: CreateCustomerInput!) {
+    createCustomer(input: $input) {
+      _id
+      firstName
+      lastName
+      email
+      phone
+      businessName
+      address {
+        street
+        unit
+        city
+        state
+        zip
+        country
+      }
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_FIRST_NAME = `
+  mutation UpdateCustomerFirstName($input: UpdateCustomerFirstNameInput!) {
+    updateCustomerFirstName(input: $input) {
+      _id
+      firstName
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_LAST_NAME = `
+  mutation UpdateCustomerLastName($input: UpdateCustomerLastNameInput!) {
+    updateCustomerLastName(input: $input) {
+      _id
+      lastName
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_ADDRESS = `
+  mutation UpdateCustomerAddress($input: UpdateCustomerAddressInput!) {
+    updateCustomerAddress(input: $input) {
+      _id
+      address {
+        street
+        unit
+        city
+        state
+        zip
+        country
+      }
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_EMAIL = `
+  mutation UpdateCustomerEmail($input: UpdateCustomerEmailInput!) {
+    updateCustomerEmail(input: $input) {
+      _id
+      email
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_PHONE = `
+  mutation UpdateCustomerPhone($input: UpdateCustomerPhoneInput!) {
+    updateCustomerPhone(input: $input) {
+      _id
+      phone
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_BUSINESS_NAME = `
+  mutation UpdateCustomerBusinessName($input: UpdateCustomerBusinessNameInput!) {
+    updateCustomerBusinessName(input: $input) {
+      _id
+      businessName
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_PROPERTIES = `
+  mutation UpdateCustomerProperties($input: UpdateCustomerPropertiesInput!) {
+    updateCustomerProperties(input: $input) {
+      _id
+      properties {
+        _id
+      }
+    }
+  }
+`;
+
+export const UPDATE_CUSTOMER_WORK_ORDERS = `
+  mutation UpdateCustomerWorkOrders($input: UpdateCustomerWorkOrdersInput!) {
+    updateCustomerWorkOrders(input: $input) {
+      _id
+      workOrders {
+        _id
+      }
+    }
+  }
+`;
+export const UPDATE_CUSTOMER_INVOICES = `
+  mutation UpdateCustomerInvoices($input: UpdateCustomerInvoicesInput!) {
+    updateCustomerInvoices(input: $input) {
+      _id
+      invoices {
+        _id
+      }
+    }
+  }
+`;
+
+export const DELETE_CUSTOMER = `
+  mutation DeleteCustomer($input: RemoveCustomerInput!) {
+    deleteCustomer(input: $input) {
+      _id
     }
   }
 `;

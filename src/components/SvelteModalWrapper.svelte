@@ -15,7 +15,7 @@
 
 <div>
   <button on:click={handleShowDialog} class="text-xs underline ml-1">
-    edit
+    view
   </button>
   <dialog bind:this={dialog} class="max-w-[50%] max-h-[50%]">
     <div class="flex w-full justify-end sticky top-0">

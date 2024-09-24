@@ -1,0 +1,11 @@
+{
+  "workOrdersPage": {
+    "tableHeaders": ["Work Order No.", "Date", "Client", "Total", "Paid", "Actions"]
+  },
+  "invoicesPage": {
+    "tableHeaders": ["Invoice No.", "Date", "Client", "Total", "Charged", "Paid", "Actions"]
+  },
+  "customersPage": {
+    "tableHeaders": ["Name", "Email", "Phone", "Actions"]
+  }
+}

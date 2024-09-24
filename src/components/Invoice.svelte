@@ -9,6 +9,8 @@
     UPDATE_INVOICE_WORK_ORDERS,
   } from "@lib/graphql/queries";
 
+  import { writable, type Writable } from "svelte/store";
+
   import { failure, success } from "@lib/svelteToast";
 
   import { capitalizeFirstLetter, getNormalDateString } from "@lib/util";
@@ -50,18 +52,19 @@
   let laborItemsState: Invoice["laborItems"] = invoice.laborItems;
   let commentsState: Invoice["comments"] = invoice.comments;
 
-  let editDate: boolean = false;
-  let editInvoiceNumber: boolean = false;
-  let editCustomerId: boolean = false;
-  let editWorkOrders: boolean = false;
-  let editQuote: boolean = false;
-  let editTotal: boolean = false;
-  let editCharged: boolean = false;
-  let editPaid: boolean = false;
-  let editMaterialsCost: boolean = false;
-  let editMaterialsCostDescription: boolean = false;
-  let editLaborItems: boolean = false;
-  let editComments: boolean = false;
+  // let editDate: boolean = false;
+  const editDate: Writable<boolean> = writable(false);
+  const editInvoiceNumber: Writable<boolean> = writable(false);
+  const editCustomerId: Writable<boolean> = writable(false);
+  const editWorkOrders: Writable<boolean> = writable(false);
+  const editQuote: Writable<boolean> = writable(false);
+  const editTotal: Writable<boolean> = writable(false);
+  const editCharged: Writable<boolean> = writable(false);
+  const editPaid: Writable<boolean> = writable(false);
+  const editMaterialsCost: Writable<boolean> = writable(false);
+  const editMaterialsCostDescription: Writable<boolean> = writable(false);
+  const editLaborItems: Writable<boolean> = writable(false);
+  const editComments: Writable<boolean> = writable(false);
 
   let paidInputEl: HTMLInputElement | null = null;
   let chargedInputEl: HTMLInputElement | null = null;
@@ -146,46 +149,46 @@
   }
 
   function setAllEditFalse() {
-    editDate = false;
-    editInvoiceNumber = false;
-    editCustomerId = false;
-    editWorkOrders = false;
-    editQuote = false;
-    editTotal = false;
-    editCharged = false;
-    editPaid = false;
-    editMaterialsCost = false;
-    editMaterialsCostDescription = false;
-    editLaborItems = false;
-    editComments = false;
+    editDate.set(false);
+    editInvoiceNumber.set(false);
+    editCustomerId.set(false);
+    editWorkOrders.set(false);
+    editQuote.set(false);
+    editTotal.set(false);
+    editCharged.set(false);
+    editPaid.set(false);
+    editMaterialsCost.set(false);
+    editMaterialsCostDescription.set(false);
+    editLaborItems.set(false);
+    editComments.set(false);
   }
 
-  function setAllEditFalseExcept(exception: boolean) {
-    editDate = false;
-    editInvoiceNumber = false;
-    editCustomerId = false;
-    editWorkOrders = false;
-    editQuote = false;
-    editTotal = false;
-    editCharged = false;
-    editPaid = false;
-    editMaterialsCost = false;
-    editMaterialsCostDescription = false;
-    editLaborItems = false;
-    editComments = false;
+  function setAllEditFalseExcept(exception: Writable<boolean>) {
+    editDate.set(false);
+    editInvoiceNumber.set(false);
+    editCustomerId.set(false);
+    editWorkOrders.set(false);
+    editQuote.set(false);
+    editTotal.set(false);
+    editCharged.set(false);
+    editPaid.set(false);
+    editMaterialsCost.set(false);
+    editMaterialsCostDescription.set(false);
+    editLaborItems.set(false);
+    editComments.set(false);
 
-    exception = true;
+    exception.set(true);
   }
   function displayHiddenButton(event: any) {
-    isEditDateBtnVisible = true;
-    const button = event.target.querySelector("button");
-    console.log(button);
-  
+    event.preventDefault();
+    const button = event?.target.querySelector("button");
+    button.classList.remove("invisible");
   }
 
   function hideHiddenButton(event: any) {
-    isEditDateBtnVisible = false;
-   
+    event.preventDefault();
+    const button = event?.target.querySelector("button");
+    button.classList.add("invisible");
   }
 
   function handleEdit(e: any) {
@@ -198,6 +201,7 @@
     e.preventDefault();
     switch ((e.target as HTMLButtonElement).value) {
       case "date":
+        console.log("date");
         setAllEditFalseExcept(editDate);
 
         break;
@@ -240,6 +244,8 @@
   async function handleSaveEdit(e: any) {
     e.preventDefault();
     setAllEditFalse();
+
+    return;
 
     let response: UpdateInvoiceFieldResponse | null = null;
     switch (e.currentTarget.value) {
@@ -458,7 +464,7 @@
         >
           <th>Date</th>
 
-          {#if editDate}
+          {#if $editDate}
             <td>
               <input
                 name="date"
@@ -468,7 +474,7 @@
               />
               <button
                 class="text-xs underline ml-1"
-                on:click={() => handleSaveEdit}
+                on:click={handleSaveEdit}
                 value="date"
                 type="button"
               >
@@ -480,7 +486,7 @@
               <span>{dateState} </span>
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={() => handleEdit}
+                on:click={handleEdit}
                 value="date"
                 type="button"
                 class:invisible={!isEditDateBtnVisible}
@@ -525,7 +531,7 @@
           on:mouseleave={hideHiddenButton}
         >
           <th>Quote</th>
-          {#if editQuote}
+          {#if $editQuote}
             <td>
               <input
                 bind:value={quoteState}
@@ -535,7 +541,7 @@
               />
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={(e) => handleSaveEdit}
+                on:click={handleSaveEdit}
                 value="quote"
                 type="button"
               >
@@ -547,7 +553,7 @@
               <span>{quoteState} </span>
               <button
                 class="invisible text-xs underline ml-1"
-                on:click={(e) => handleEdit}
+                on:click={handleEdit}
                 value="quote"
                 type="button"
               >
@@ -561,7 +567,7 @@
           on:mouseleave={hideHiddenButton}
         >
           <th>Total</th>
-          {#if editTotal}
+          {#if $editTotal}
             <td>
               <input
                 bind:value={totalState}
@@ -612,7 +618,7 @@
               value="charged"
               type="button"
             >
-              {#if editCharged}
+              {#if $editCharged}
                 save
               {:else}
                 edit
@@ -635,12 +641,12 @@
               disabled
             />
             <button
-              on:click={editPaid ? handleSaveEdit : handleEdit}
+              on:click={$editPaid ? handleSaveEdit : handleEdit}
               value="completed"
               type="button"
               class="invisible text-xs underline ml-1"
             >
-              {editPaid ? "save" : "edit"}
+              {$editPaid ? "save" : "edit"}
             </button>
           </td>
         </tr>
@@ -649,7 +655,7 @@
           on:mouseleave={hideHiddenButton}
         >
           <th>Comments</th>
-          {#if editComments}
+          {#if $editComments}
             <td>
               <textarea
                 bind:value={commentsState}

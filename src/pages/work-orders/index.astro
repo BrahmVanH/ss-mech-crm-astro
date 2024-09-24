@@ -1,0 +1,81 @@
+---
+// import WorkOrder from '@components/WorkOrder.astro';
+
+import { QUERY_WORKORDERS_STRING } from "@lib/graphql/queries";
+
+import WorkOrder from "@components/WorkOrder";
+import ModalWrapper from "@components/ModalWrapper";
+import { Icon } from "astro-icon/components";
+
+import type { WorkOrder as WorkOrderType } from "@lib/__generated__/graphql";
+import Layout from "src/layouts/Layout.astro";
+
+import tableData from "@lib/tableData.json";
+import "@styles/microtip.css";
+
+export const prerender = false;
+
+const response = await fetch("http://localhost:5000/graphql", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    query: QUERY_WORKORDERS_STRING,
+  }),
+});
+
+const data = await response.json();
+
+const workOrders: WorkOrderType[] = data.data.queryWorkOrders;
+
+console.log("data", data);
+---
+
+<Layout title="Work Orders">
+  <div class="text-white">
+    <div class="w-full flex justify-between">
+      <h1 class="text-3xl text-white mt-2 mb-2">Work Orders</h1>
+      <a
+        class="my-auto mr-4"
+        aria-label="Create Work Order"
+        data-microtip-position="bottom"
+        role="tooltip"
+        href="/work-orders/create"
+      >
+        <Icon name="cross" />
+      </a>
+    </div>
+    <table class="text-left border-collaps">
+      <thead>
+        <tr class="border-b border-white">
+          {
+            tableData.workOrdersPage.tableHeaders.map((header) => (
+              <th class="text-start border border-white">{header}</th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          workOrders?.map((workOrder: WorkOrderType) => (
+            <tr class="border-b border-white [&>td]:py-1 [&>td]:px-3 [&>td]:border [&>td]:border-white">
+              <td>{workOrder._id}</td>
+              <td>{workOrder.date}</td>
+              <td>
+                {workOrder.customerId.firstName} {workOrder.customerId.lastName}
+              </td>
+              <td>{workOrder.total}</td>
+              <td>{workOrder.paid}</td>
+              <td>
+                <ModalWrapper client:load>
+                  <WorkOrder client:load workOrder={workOrder} />
+                </ModalWrapper>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</Layout>

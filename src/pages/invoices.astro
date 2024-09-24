@@ -4,11 +4,17 @@
 import { QUERY_INVOICES, QUERY_WORKORDERS_STRING } from "@lib/graphql/queries";
 
 import WorkOrder from "../components/WorkOrder";
-import ModalWrapper from "@components/ModalWrapper.svelte";
+import ModalWrapper from "@components/SvelteModalWrapper.svelte";
 import Test from "@components/Test.svelte";
 
-import type { Invoice as InvoiceType } from "@lib/__generated__/graphql";
+import type {
+  Invoice as InvoiceType,
+  Address,
+} from "@lib/__generated__/graphql";
 import InvoiceComponent from "@components/Invoice.svelte";
+import Layout from "src/layouts/Layout.astro";
+
+import tableData from "@lib/tableData.json";
 
 export const prerender = false;
 
@@ -25,47 +31,47 @@ const response = await fetch("http://localhost:5000/graphql", {
 const data = await response.json();
 
 const invoices: InvoiceType[] = data.data.queryInvoices;
+if (!invoices) {
+  console.log("No invoices found");
+}
+console.log(invoices);
 
 console.log("data", data);
 ---
 
-<di>
-  <table class="text-left border-collapse">
-    <thead>
-      <tr class="border-b border-black">
-        <th>Invoices</th>
-      </tr>
-      <tr class="border-b border-black">
-        <th class="text-start border border-black">Invoice No.</th>
-        <th class="text-start border border-black">Date</th>
-        <th class="text-start border border-black">Client</th>
-        <th class="text-start border border-black">Total</th>
-        <th class="text-start border border-black">Charged</th>
-        <th class="text-start border border-black">Paid</th>
-        <th class="text-start border border-black">Actions</th>
-      </tr>
-    </thead>
+<Layout title="Invoices">
+  <div class="text-white">
+    <h1 class="text-3xl text-white mt-2 mb-2">Invoices</h1>
+    <table class="text-left border-collaps">
+      <thead>
+        <tr class="border-b border-white ">
+          {tableData.invoicesPage.tableHeaders.map((header) => (
+            <th class="text-start border border-white">{header}</th>
+          ))}
+        </tr>
+      </thead>
 
-    <tbody>
-      {
-        invoices?.map((invoice: InvoiceType) => (
-          <tr class="border-b border-black">
-            <td class="py-1 px-3 border border-black">{invoice._id}</td>
-            <td class="py-1 px-3 border border-black">{invoice.date}</td>
-            <td class="py-1 px-3 border border-black">
-              {invoice.customerId.firstName} {invoice.customerId.lastName}
-            </td>
-            <td class="py-1 px-3 border border-black">{invoice.total}</td>
-            <td class="py-1 px-3 border border-black">{invoice.charged}</td>
-            <td class="py-1 px-3 border border-black">{invoice.paid}</td>
-            <td>
-              <ModalWrapper client:load >
-                <InvoiceComponent invoice={invoice} />
-              </ModalWrapper>
-            </td>
-          </tr>
-        ))
-      }
-    </tbody>
-  </table>
-</di>
+      <tbody>
+        {
+          invoices?.map((invoice: InvoiceType) => (
+            <tr border-b border-white [&>td]:py-1 [&>td]:px-3 [&>td]:border [&>td]:border-white">
+              <td>{invoice._id}</td>
+              <td>{invoice.date}</td>
+              <td>
+                {invoice.customerId.firstName} {invoice.customerId.lastName}
+              </td>
+              <td>{invoice.total}</td>
+              <td>{invoice.charged}</td>
+              <td>{invoice.paid}</td>
+              <td>
+                <ModalWrapper client:load>
+                  <InvoiceComponent client:load invoice={invoice} />
+                </ModalWrapper>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</Layout>

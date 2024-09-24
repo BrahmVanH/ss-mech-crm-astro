@@ -1,0 +1,67 @@
+---
+// import WorkOrder from '@components/WorkOrder.astro';
+
+import { QUERY_CUSTOMERS } from "@lib/graphql/queries";
+
+import Customer from "@components/Customer.svelte";
+import ModalWrapper from "@components/ModalWrapper";
+
+import type { Customer as CustomerType } from "@lib/__generated__/graphql";
+import Layout from "src/layouts/Layout.astro";
+
+import tableData from "@lib/tableData.json";
+
+export const prerender = false;
+
+const response = await fetch("http://localhost:5000/graphql", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+  },
+  body: JSON.stringify({
+    query: QUERY_CUSTOMERS,
+  }),
+});
+
+const data = await response.json();
+
+const customers: CustomerType[] = data.data.queryCustomers;
+
+console.log("data", data);
+---
+
+<Layout title="Customers">
+  <div class="text-white">
+    <h1 class="text-3xl text-white mt-2 mb-2">Customers</h1>
+    <table class="text-left border-collaps">
+      <thead>
+        <tr class="border-b border-white">
+          {
+            tableData.customersPage.tableHeaders.map((header) => (
+              <th class="text-start border border-white">{header}</th>
+            ))
+          }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          customers?.map((customer: CustomerType) => (
+            <tr class="border-b border-white [&>td]:py-1 [&>td]:px-3 [&>td]:border [&>td]:border-white">
+              <td>
+                {customer.firstName} {customer.lastName}
+              </td>
+              <td>{customer.email}</td>
+
+              <td>{customer.phone}</td>
+              <td>
+                <ModalWrapper client:load>
+                  <Customer client:load customer={customer} />
+                </ModalWrapper>
+              </td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+</Layout>
